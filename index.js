@@ -6,7 +6,9 @@ const authRouter = require('./auth/auth.router');
 const userRouter = require('./user/user.router');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const cors = require('cors');
 
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 
 
