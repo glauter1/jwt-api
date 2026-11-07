@@ -1,0 +1,32 @@
+### Criar autor
+POST http://localhost:3000/v1/authors
+Content-Type: application/json
+
+{ "name": "Machado de Assis", "nationality": "Brasileira", "birthDate": "1839-06-21" }
+
+### Listar autores
+GET http://localhost:3000/v1/authors
+
+### Editar autor
+PUT http://localhost:3000/v1/authors/1
+Content-Type: application/json
+
+{ "nationality": "Brasileiro" }
+
+### Criar leitor
+POST http://localhost:3000/v1/readers
+Content-Type: application/json
+
+{ "name": "Maria Silva", "cpf": "12345678900", "email": "maria@email.com", "phone": "44999990000" }
+
+### Criar leitor com CPF repetido
+POST http://localhost:3000/v1/readers
+Content-Type: application/json
+
+{ "name": "Outra Pessoa", "cpf": "12345678900" }
+
+### Histórico do leitor
+GET http://localhost:3000/v1/readers/1/loans
+
+### Leitor que não existe
+GET http://localhost:3000/v1/readers/999
