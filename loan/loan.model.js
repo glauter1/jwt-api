@@ -1,26 +1,25 @@
 const db = require('../config/db');
 const { DataTypes } = require('sequelize');
-const Emprestimo = db.define('Emprestimo', {
+const loan = db.define('Loan', {
     loanDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     dueDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     returnDate: {
-        type: DataTypes.DATE,
-        allowNull: true,
+        type: DataTypes.DATEONLY,
+    
     },
     status: {
-        type: DataTypes.ENUM('active', 'returned', 'overdue'),
-        allowNull: false,
+        type: DataTypes.STRING,
+        defaultValue: 'ativo',
     },
     fine: {
         type: DataTypes.FLOAT,
-        allowNull: true,
-        defaultValue: 0.0,
+        defaultValue: 0,
     }
 });
-module.exports = Emprestimo;
+module.exports = loan;

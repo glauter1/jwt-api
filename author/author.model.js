@@ -8,11 +8,11 @@ const Author = db.define('Author', {
     },
     nationality: {
         type: DataTypes.STRING,
-        allowNull: false,
+      
     },
     birthdate: {
         type: DataTypes.DATE,
-        allowNull: false,
+       
     }
 });
 
