@@ -7,10 +7,12 @@ const userRouter = require('./user/user.router');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const cors = require('cors');
+const categoryRouter = require('./category/category.router');
 require('./models');
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: 'http://localhost:3001', credentials: true }));
 app.use(express.json());
+app.use('/v1/categories', categoryRouter);
 
 
 app.use('/v1/auth', authRouter);

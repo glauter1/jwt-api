@@ -1,0 +1,6 @@
+### Criar
+POST http://localhost:3000/v1/categories
+
+Content-Type: application/json
+
+{ "name": "Romance", "description": "Livros de romance" }
