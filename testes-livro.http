@@ -1,0 +1,44 @@
+### Criar segundo autor
+POST http://localhost:3000/v1/authors
+Content-Type: application/json
+
+{ "name": "Autor Dois", "nationality": "Brasileira", "birthDate": "1950-01-01" }
+
+### Criar livro
+POST http://localhost:3000/v1/books
+Content-Type: application/json
+
+{ "title": "Dom Casmurro", "isbn": "9788535910663", "year": 1899, "totalCopies": 3, "categoryId": 1, "authorIds": [1, 2] }
+
+### Livro com categoria inexistente
+POST http://localhost:3000/v1/books
+Content-Type: application/json
+
+{ "title": "Teste", "isbn": "111", "totalCopies": 1, "categoryId": 999, "authorIds": [1] }
+
+### Listar todos
+GET http://localhost:3000/v1/books
+
+### Filtrar por título
+GET http://localhost:3000/v1/books?title=dom
+
+### Filtrar por categoria
+GET http://localhost:3000/v1/books?categoryId=1
+
+### Filtrar por autor
+GET http://localhost:3000/v1/books?authorId=1
+
+### Só disponíveis
+GET http://localhost:3000/v1/books?available=true
+
+### Editar (trocar autores e total)
+PUT http://localhost:3000/v1/books/1
+Content-Type: application/json
+
+{ "totalCopies": 5, "authorIds": [1] }
+
+### Excluir categoria com livro (deve dar 409)
+DELETE http://localhost:3000/v1/categories/1
+
+### Excluir autor com livro (deve dar 409)
+DELETE http://localhost:3000/v1/authors/1

@@ -1,0 +1,125 @@
+### Login admin
+# @name loginAdmin
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "admin@biblioteca.com", "password": "123456" }
+
+### Preparação: categoria
+# @name cat
+POST http://localhost:3000/v1/categories
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "name": "Teste {{$randomInt 1000 9999}}" }
+
+### Preparação: autor
+# @name aut
+POST http://localhost:3000/v1/authors
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "name": "Autor Teste", "nationality": "Brasileira", "birthDate": "1970-01-01" }
+
+### Preparação: livro com 1 exemplar
+# @name livroA
+POST http://localhost:3000/v1/books
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "title": "Livro A", "isbn": "A{{$randomInt 100000 999999}}", "year": 2000, "totalCopies": 1, "categoryId": {{cat.response.body.id}}, "authorIds": [{{aut.response.body.id}}] }
+
+### Preparação: livro com 5 exemplares
+# @name livroB
+POST http://localhost:3000/v1/books
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "title": "Livro B", "isbn": "B{{$randomInt 100000 999999}}", "year": 2001, "totalCopies": 5, "categoryId": {{cat.response.body.id}}, "authorIds": [{{aut.response.body.id}}] }
+
+### Preparação: leitor
+# @name leitor
+POST http://localhost:3000/v1/readers
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "name": "Leitor Teste", "cpf": "{{$randomInt 100000 999999}}", "email": "l{{$randomInt 10000 99999}}@email.com", "phone": "44999990000" }
+
+### 1. Emprestar livro A (esperado 201)
+# @name emp1
+POST http://localhost:3000/v1/loans
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "bookId": {{livroA.response.body.id}}, "readerId": {{leitor.response.body.id}} }
+
+### 2. Livro A deve ter 0 disponíveis
+GET http://localhost:3000/v1/books/{{livroA.response.body.id}}
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 3. Emprestar livro A de novo (esperado 409, sem exemplar)
+POST http://localhost:3000/v1/loans
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "bookId": {{livroA.response.body.id}}, "readerId": {{leitor.response.body.id}} }
+
+### 4. Emprestar livro B (esperado 201)
+POST http://localhost:3000/v1/loans
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "bookId": {{livroB.response.body.id}}, "readerId": {{leitor.response.body.id}} }
+
+### 5. Emprestar livro B de novo (esperado 201, leitor com 3 ativos)
+POST http://localhost:3000/v1/loans
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "bookId": {{livroB.response.body.id}}, "readerId": {{leitor.response.body.id}} }
+
+### 6. Quarto empréstimo (esperado 409, limite de 3)
+POST http://localhost:3000/v1/loans
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "bookId": {{livroB.response.body.id}}, "readerId": {{leitor.response.body.id}} }
+
+### 7. Excluir livro com empréstimo ativo (esperado 409)
+DELETE http://localhost:3000/v1/books/{{livroA.response.body.id}}
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 8. Listar ativos (esperado 200)
+GET http://localhost:3000/v1/loans?status=ATIVO
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 9. Devolver o empréstimo 1 (esperado 200, fine 0 e status DEVOLVIDO)
+PATCH http://localhost:3000/v1/loans/{{emp1.response.body.id}}/return
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 10. Devolver de novo (esperado 409)
+PATCH http://localhost:3000/v1/loans/{{emp1.response.body.id}}/return
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 11. Livro A voltou a ter 1 disponível
+GET http://localhost:3000/v1/books/{{livroA.response.body.id}}
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 12. Listar devolvidos (esperado 200)
+GET http://localhost:3000/v1/loans?status=DEVOLVIDO
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 13. Status inválido (esperado 400)
+GET http://localhost:3000/v1/loans?status=QUALQUER
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 14. Sem token (esperado 401)
+GET http://localhost:3000/v1/loans
+
+### 15. Dashboard como admin (esperado 200)
+GET http://localhost:3000/v1/reports/dashboard
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### 16. Histórico do leitor (esperado 200 com os 3 empréstimos)
+GET http://localhost:3000/v1/readers/{{leitor.response.body.id}}/loans
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}

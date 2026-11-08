@@ -1,0 +1,82 @@
+### Login admin
+# @name loginAdmin
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "admin@biblioteca.com", "password": "123456" }
+
+### Login atendente antigo
+# @name loginAtendente
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "atendente@biblioteca.com", "password": "123456" }
+
+### Criar atendente sem token (esperado 401)
+POST http://localhost:3000/v1/user
+Content-Type: application/json
+
+{ "name": "Carlos", "username": "carlos", "email": "carlos@biblioteca.com", "password": "123456" }
+
+### Criar atendente como atendente (esperado 403)
+POST http://localhost:3000/v1/user
+Content-Type: application/json
+Authorization: Bearer {{loginAtendente.response.body.accessToken}}
+
+{ "name": "Carlos", "username": "carlos", "email": "carlos@biblioteca.com", "password": "123456" }
+
+### Criar atendente como admin (esperado 201, e sem password na resposta)
+POST http://localhost:3000/v1/user
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "name": "Carlos", "username": "carlos", "email": "carlos@biblioteca.com", "password": "123456" }
+
+### Login do Carlos
+# @name loginCarlos
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "carlos@biblioteca.com", "password": "123456" }
+
+### Desativar o Carlos (esperado 200, active false)
+PATCH http://localhost:3000/v1/user/{{loginCarlos.response.body.user.id}}/active
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "active": false }
+
+### Login do Carlos desativado (esperado 403)
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "carlos@biblioteca.com", "password": "123456" }
+
+### Reativar o Carlos (esperado 200, active true)
+PATCH http://localhost:3000/v1/user/{{loginCarlos.response.body.user.id}}/active
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "active": true }
+
+### Editar o Carlos (esperado 200)
+PUT http://localhost:3000/v1/user/{{loginCarlos.response.body.user.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "name": "Carlos Eduardo" }
+
+### Admin tenta se desativar (esperado 400)
+PATCH http://localhost:3000/v1/user/{{loginAdmin.response.body.user.id}}/active
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "active": false }
+
+### Listar usuários como admin (esperado 200, sem password)
+GET http://localhost:3000/v1/user
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+### Listar usuários como atendente (esperado 403)
+GET http://localhost:3000/v1/user
+Authorization: Bearer {{loginAtendente.response.body.accessToken}}

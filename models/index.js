@@ -11,8 +11,8 @@ Category.hasMany(Book, { foreignKey: 'categoryId' });
 Book.belongsTo(Category, { foreignKey: 'categoryId' });
 
 // N:N, um livro tem vários autores e um autor tem vários livros
-Book.belongsToMany(Author, { through: 'BookAuthor' });
-Author.belongsToMany(Book, { through: 'BookAuthor' });
+Book.belongsToMany(Author, { through: 'BookAuthor', foreignKey: 'BookId', otherKey: 'AuthorId' });
+Author.belongsToMany(Book, { through: 'BookAuthor', foreignKey: 'AuthorId', otherKey: 'BookId' });
 
 // um empréstimo pertence a um livro, um leitor e um atendente
 Book.hasMany(Loan, { foreignKey: 'bookId' });

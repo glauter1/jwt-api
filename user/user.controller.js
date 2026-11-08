@@ -26,7 +26,8 @@ const userController = {
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
-            res.json(user);
+            const { password, ...dados } = user.toJSON();
+            res.json(dados);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
@@ -37,6 +38,34 @@ const userController = {
             res.json(users);
         } catch (error) {
             res.status(400).json({ error: error.message });
+        }
+    },
+        update: async (req, res) => {
+        try {
+            const user = await userService.update(req.params.id, req.body);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            res.json(user);
+        } catch (error) {
+            res.status(error.status || 400).json({ error: error.message });
+        }
+    },
+
+    setActive: async (req, res) => {
+        try {
+            const mesmoUsuario = String(req.params.id) === String(req.user.id);
+            if (mesmoUsuario && req.body.active === false) {
+                return res.status(400).json({ error: 'Você não pode desativar a sua própria conta' });
+            }
+
+            const user = await userService.setActive(req.params.id, req.body.active);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            res.json(user);
+        } catch (error) {
+            res.status(error.status || 400).json({ error: error.message });
         }
     }
 };

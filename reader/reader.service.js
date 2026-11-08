@@ -1,6 +1,7 @@
 const Reader = require('./reader.model');
 const Loan = require('../loan/loan.model');
 const Book = require('../book/book.model');
+const { comStatus } = require('../loan/loan.utils');
 
 const readerService = {
     create: async (data) => {
@@ -21,15 +22,17 @@ const readerService = {
         await reader.update(data);
         return reader;
     },
-
     findLoans: async (id) => {
         const reader = await Reader.findByPk(id);
         if (!reader) return null;
 
-        return await Loan.findAll({
+        const loans = await Loan.findAll({
             where: { readerId: id },
-            include: Book
+            include: Book,
+            order: [['id', 'DESC']]
         });
+
+        return loans.map(comStatus);
     }
 };
 

@@ -1,7 +1,10 @@
 const express = require('express');
 const readerController = require('./reader.controller');
+const authMiddleware = require('../auth/auth.middleware');
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 router.get('/', readerController.findAll);
 router.get('/:id', readerController.findById);

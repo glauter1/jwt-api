@@ -1,0 +1,47 @@
+### Criar atendente 
+POST http://localhost:3000/v1/user
+Content-Type: application/json
+
+{ "name": "Atendente", "username": "atendente", "email": "atendente@biblioteca.com", "password": "123456", "isAdmin": false }
+
+### Login admin
+# @name loginAdmin
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "admin@biblioteca.com", "password": "123456" }
+
+### Login atendente
+# @name loginAtendente
+POST http://localhost:3000/v1/auth/login
+Content-Type: application/json
+
+{ "email": "atendente@biblioteca.com", "password": "123456" }
+
+### Listar categorias sem token (esperado 401)
+GET http://localhost:3000/v1/categories
+
+### Listar categorias como atendente (esperado 200)
+GET http://localhost:3000/v1/categories
+Authorization: Bearer {{loginAtendente.response.body.accessToken}}
+
+### Criar categoria como atendente (esperado 403)
+POST http://localhost:3000/v1/categories
+Content-Type: application/json
+Authorization: Bearer {{loginAtendente.response.body.accessToken}}
+
+{ "name": "Terror {{$randomInt 1000 9999}}" }
+
+### Criar categoria como admin (esperado 201)
+POST http://localhost:3000/v1/categories
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+
+{ "name": "Terror {{$randomInt 1000 9999}}" }
+
+### Criar leitor como atendente (esperado 201)
+POST http://localhost:3000/v1/readers
+Content-Type: application/json
+Authorization: Bearer {{loginAtendente.response.body.accessToken}}
+
+{ "name": "Joao Souza", "cpf": "{{$randomInt 100000 999999}}", "email": "joao{{$randomInt 100 999}}@email.com", "phone": "44999990000" }
