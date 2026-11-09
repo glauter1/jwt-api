@@ -18,7 +18,10 @@ const userService = {
             userData.password = await bcrypt.hash(userData.password, 10);
             const user = await User.create(userData);
             return semSenha(user);
-        } catch (error) {
+          } catch (error) {
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                throw new Error('E-mail ou username já está em uso');
+            }
             throw new Error('Error creating user: ' + error.message);
         }
     },
