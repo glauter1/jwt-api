@@ -1,6 +1,6 @@
 # Biblioteca API (jwt-api)
 
-API de um sistema de gestão de biblioteca: cadastro de categorias, autores, livros, leitores e atendentes, com controle de empréstimos e devoluções. Trabalho da disciplina de [nome da disciplina], [curso], Unipar.
+API de um sistema de gestão de biblioteca: cadastro de categorias, autores, livros, leitores e atendentes, com controle de empréstimos e devoluções. Trabalho da disciplina de Back-end , ads, Unipar.
 
 **Integrantes:** [gLAUTER JUNIOR ALBERICO RA:60006591]
 
